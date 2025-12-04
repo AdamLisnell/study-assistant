@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Dict, List
 
 from .utils.logger import setup_logger
+from .document_parser import DocumentParser
 
 logger = setup_logger(__name__)
 
@@ -13,7 +14,8 @@ logger = setup_logger(__name__)
 class FileHandler:
     """Handle file operations for notes and processed index."""
     
-    SUPPORTED_EXTENSIONS = {".txt", ".md", ".markdown"}
+    # Uppdaterade extensions
+    SUPPORTED_EXTENSIONS = {".txt", ".md", ".markdown", ".pdf", ".docx"}
     
     def __init__(self, incoming_dir: Path, index_path: Path):
         """
@@ -25,6 +27,7 @@ class FileHandler:
         """
         self.incoming_dir = incoming_dir
         self.index_path = index_path
+        self.parser = DocumentParser()
         self._ensure_directories()
     
     def _ensure_directories(self) -> None:
@@ -50,6 +53,7 @@ class FileHandler:
     def read_note_file(self, filepath: Path) -> str:
         """
         Read content from a note file.
+        Automatically detects file type and extracts text.
         
         Args:
             filepath: Path to note file
@@ -58,8 +62,9 @@ class FileHandler:
             File content as string
         """
         try:
-            content = filepath.read_text(encoding="utf-8")
-            logger.debug(f"Read {len(content)} characters from {filepath.name}")
+            # Use DocumentParser to handle different formats
+            content = self.parser.parse_file(filepath)
+            logger.debug(f"Extracted {len(content)} characters from {filepath.name}")
             return content
         except Exception as e:
             logger.error(f"Error reading {filepath}: {e}")
