@@ -49,3 +49,5 @@ processed_index.json
 # OS
 .DS_Store
 Thumbs.db
+
+.fake

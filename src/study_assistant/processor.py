@@ -11,6 +11,7 @@ from .file_handler import FileHandler
 from .openai_client import StudyAssistantClient
 from .subject_parser import SubjectParser
 from .utils.logger import setup_logger
+from .pdf_generator import PDFGenerator
 
 logger = setup_logger(__name__)
 console = Console()
@@ -123,8 +124,9 @@ class NoteProcessor:
                 return False
             
             # Save output
+            output_base = Path("/Users/adamlisnell/Desktop/NotePal/Generated_study_material")
             subject_folder = SubjectParser.get_subject_folder(
-                self.config.notes_incoming_dir.parent,
+                output_base,
                 subject
             )
             output_filename = SubjectParser.generate_output_filename(filename)
@@ -135,9 +137,29 @@ class NoteProcessor:
             # Display success message with absolute path if relative path fails
             try:
                 rel_path = output_path.relative_to(Path.cwd())
-                console.print(f"[green]✓[/green] Saved to {rel_path}")
+                console.print(f"[green]✓[/green] Markdown saved to {rel_path}")
             except ValueError:
-                console.print(f"[green]✓[/green] Saved to {output_path}")
+                console.print(f"[green]✓[/green] Markdown saved to {output_path}")
+            
+            # Generate PDF version
+            pdf_filename = output_filename.replace('.md', '.pdf')
+            pdf_path = subject_folder / pdf_filename
+            
+            console.print(f"  Generating PDF...")
+            pdf_success = PDFGenerator.markdown_to_pdf(
+                study_material,
+                pdf_path,
+                title=f"{subject.title()} - Study Material"
+            )
+            
+            if pdf_success:
+                try:
+                    rel_pdf_path = pdf_path.relative_to(Path.cwd())
+                    console.print(f"[green]✓[/green] PDF saved to {rel_pdf_path}")
+                except ValueError:
+                    console.print(f"[green]✓[/green] PDF saved to {pdf_path}")
+            else:
+                console.print(f"[yellow]⚠[/yellow] PDF generation failed, but Markdown is saved")
             
             return True
             

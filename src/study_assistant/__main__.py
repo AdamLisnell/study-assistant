@@ -76,6 +76,18 @@ def info() -> None:
     except Exception as e:
         console.print(f"[red]Error loading configuration:[/red] {e}")
         raise typer.Exit(code=1)
+    
+@app.command()
+def watch() -> None:
+    """Watch incoming directory and auto-process new notes."""
+    try:
+        from .auto_watcher import start_watching
+        start_watching()
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Stopped watching[/yellow]")
+    except Exception as e:
+        console.print(f"[red]Error:[/red] {e}")
+        raise typer.Exit(code=1)
 
 
 def main() -> None:
