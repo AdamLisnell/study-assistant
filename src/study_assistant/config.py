@@ -13,32 +13,38 @@ class AppConfig(BaseSettings):
     """Application configuration with environment variable support."""
     
     # OpenAI settings
-    openai_api_key: str = Field(..., env="OPENAI_API_KEY")
-    openai_model: str = Field(default="gpt-4-turbo-preview", env="OPENAI_MODEL")
+    openai_api_key: str = Field(..., validation_alias="OPENAI_API_KEY")
+    openai_model: str = Field(default="gpt-4o-mini", validation_alias="OPENAI_MODEL")
     
     # Directory settings
     notes_incoming_dir: Path = Field(
         default=Path("./notes/incoming"),
-        env="NOTES_INCOMING_DIR"
+        validation_alias="NOTES_INCOMING_DIR"
+    )
+    notes_output_dir: Path = Field(
+        default=Path("./notes"),
+        validation_alias="NOTES_OUTPUT_DIR"
     )
     processed_index_path: Path = Field(
         default=Path("./processed_index.json"),
-        env="PROCESSED_INDEX_PATH"
+        validation_alias="PROCESSED_INDEX_PATH"
     )
     
     # Logging
-    log_level: str = Field(default="INFO", env="LOG_LEVEL")
+    log_level: str = Field(default="INFO", validation_alias="LOG_LEVEL")
     
     # Rate limiting
-    max_requests_per_minute: int = Field(default=50, env="MAX_REQUESTS_PER_MINUTE")
+    max_requests_per_minute: int = Field(default=50, validation_alias="MAX_REQUESTS_PER_MINUTE")
     
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8"
+    }
     
-    @field_validator("notes_incoming_dir")
-    def validate_incoming_dir(cls, v: Path) -> Path:
-        """Ensure incoming directory exists."""
+    @field_validator("notes_incoming_dir", "notes_output_dir")
+    @classmethod
+    def validate_dirs(cls, v: Path) -> Path:
+        """Ensure directories exist."""
         v.mkdir(parents=True, exist_ok=True)
         return v
 
@@ -46,4 +52,4 @@ class AppConfig(BaseSettings):
 def load_config() -> AppConfig:
     """Load configuration from environment and .env file."""
     load_dotenv()
-    return AppConfig()
+    return AppConfig() # type: ignore
