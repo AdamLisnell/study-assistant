@@ -36,9 +36,20 @@ class NoteWatcher(FileSystemEventHandler):
         time.sleep(1)
         self._handle_file(event.src_path)
     
-    def _handle_file(self, file_path: str):
+    def _handle_file(self, file_path: str | bytes | Path) -> None:
         """Process a file if it's supported."""
-        filepath = Path(file_path)
+        # Convert to Path, handling bytes/str/Path
+        if isinstance(file_path, bytes):
+            filepath: Path = Path(file_path.decode('utf-8'))
+        elif isinstance(file_path, str):
+            filepath: Path = Path(file_path)
+        elif isinstance(file_path, Path):
+            filepath: Path = file_path
+        else:
+            # Fallback for any unexpected types
+            filepath: Path = Path(str(file_path))
+        
+        # Now filepath is guaranteed to be Path type
         
         # Check if supported file type
         if filepath.suffix.lower() not in self.supported_extensions:
@@ -48,9 +59,9 @@ class NoteWatcher(FileSystemEventHandler):
         if filepath in self.processing_files:
             return
         
-        logger.info(f"📥 New file detected: {filepath.name}")
-        print(f"\n📥 New file detected: {filepath.name}")
-        print("🤖 Auto-processing...")
+        logger.info(f" New file detected: {filepath.name}")
+        print(f"\n New file detected: {filepath.name}")
+        print(" Auto-processing...")
         
         self.processing_files.add(filepath)
         
@@ -59,11 +70,11 @@ class NoteWatcher(FileSystemEventHandler):
             success = self.processor._process_single_note(filepath)
             
             if success:
-                logger.info(f"✅ Auto-processed: {filepath.name}")
-                print(f"✅ Auto-processed successfully!\n")
+                logger.info(f" Auto-processed: {filepath.name}")
+                print(f" Auto-processed successfully!\n")
             else:
-                logger.error(f"❌ Failed to process: {filepath.name}")
-                print(f"❌ Processing failed\n")
+                logger.error(f" Failed to process: {filepath.name}")
+                print(f" Processing failed\n")
         
         finally:
             # Remove from processing set after a delay
@@ -80,11 +91,11 @@ def start_watching():
     
     print(f"""
 ╔═══════════════════════════════════════════════════════╗
-║              📚 NotePal Auto-Watcher                 ║
+║               NotePal Auto-Watcher                    ║
 ╚═══════════════════════════════════════════════════════╝
 
-👀 Watching: {incoming_dir}
-🤖 Auto-processing enabled
+Watching: {incoming_dir}
+Auto-processing enabled
 
 Drop your notes into the folder and they'll be processed automatically!
 
@@ -101,7 +112,7 @@ Press Ctrl+C to stop...
             time.sleep(1)
     except KeyboardInterrupt:
         observer.stop()
-        print("\n\n👋 NotePal Auto-Watcher stopped")
+        print("\n\n NotePal Auto-Watcher stopped")
     
     observer.join()
 
