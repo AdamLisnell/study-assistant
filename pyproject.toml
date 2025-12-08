@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [
-    {name = "Adam Lisnell", email = "your.email@example.com"}
+    {name = "Adam Lisnell", email = "adam.lisnell@gmail.com"}
 ]
 keywords = ["education", "ai", "notes", "openai", "study"]
 
@@ -22,6 +22,12 @@ dependencies = [
     "pyyaml>=6.0",
     "rich>=13.0.0",
     "typer>=0.9.0",
+    "pypdf>=4.0.0",
+    "pdfplumber>=0.10.0",
+    "python-docx>=1.0.0",
+    "markdown>=3.5.0",
+    "weasyprint>=60.0",
+    "watchdog>=3.0.0",
 ]
 
 [project.optional-dependencies]
@@ -49,19 +55,3 @@ line_length = 88
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--cov=src/study_assistant --cov-report=html --cov-report=term-missing"
-# Add these to dependencies array:
-dependencies = [
-    "openai>=1.0.0",
-    "python-dotenv>=1.0.0",
-    "pydantic>=2.0.0",
-    "pydantic-settings>=2.0.0",
-    "pyyaml>=6.0",
-    "rich>=13.0.0",
-    "typer>=0.9.0",
-    "pypdf>=4.0.0",
-    "pdfplumber>=0.10.0",
-    "python-docx>=1.0.0",
-    "markdown>=3.5.0",
-    "weasyprint>=60.0",
-    "watchdog>=3.0.0",
-]

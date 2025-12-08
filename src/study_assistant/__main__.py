@@ -47,7 +47,7 @@ def process(
         logger = setup_logger("study_assistant", config.log_level)
         
         # Display banner
-        console.print("\n[bold blue]📚 Study Assistant[/bold blue]\n", style="bold")
+        console.print("\n[bold blue]Study Assistant[/bold blue]\n", style="bold")
         
         # Process notes
         processor = NoteProcessor(config)
