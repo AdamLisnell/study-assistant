@@ -20,13 +20,9 @@ Transform your lecture notes into comprehensive study materials automatically us
 ## Screenshots
 
 ### macOS App Interface
-<img src="images/completed.png" width="700"/>
-
+<img src="images/main_interface.png" width="700"/>
 
 <img src="images/processing.png" width="700"/>
-
-
-<img src="images/main_interface.png" width="700"/>
 
 ### Generated Study Material
 <img src="images/generated_pdf.png" width="700"/>
